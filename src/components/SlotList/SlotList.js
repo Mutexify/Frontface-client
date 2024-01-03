@@ -4,7 +4,7 @@ import "./SlotList.css";
 function SlotListElement({ slot }) {
   const handleClick = async () => {
     const response = await fetch(`${BaseURL}/api/slots/${slot.id}`, {
-      method: "PUT",
+      method: "PATCH",
     });
     const data = await response.json();
     console.log(data);
@@ -20,7 +20,11 @@ function SlotListElement({ slot }) {
         }}
       >
         <div>{`State: ${slot.blocked ? "blocked" : "not blocked"}`}</div>
-        <button disabled={slot.blocked} className="listElementButton">
+        <button
+          onClick={handleClick}
+          disabled={slot.blocked}
+          className="listElementButton"
+        >
           Block
         </button>
       </div>
