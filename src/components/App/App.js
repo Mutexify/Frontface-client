@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import "../../constants";
 import "../SlotList/SlotList";
 import SlotList from "../SlotList/SlotList";
+import { BaseURL } from "./../../constants";
 import "./App.css";
-
-const BaseURL = "http://localhost:3000";
 
 function App() {
   const [slots, setSlots] = useState([]);

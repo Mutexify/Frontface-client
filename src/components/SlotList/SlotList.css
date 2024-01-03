@@ -1,8 +1,8 @@
 .listContainer {
   display: flex;
   justify-content: center;
-  align-items: center;
-  flex-grow: 0;
+  align-items: stretch;
+  flex-direction: column;
 
   border-style: solid;
   border-width: 1px;
@@ -10,4 +10,19 @@
 
   min-height: 10vh;
   min-width: 20vw;
+}
+
+.listElement {
+  border-style: solid;
+  border-width: 1px;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.listElementButton {
+  margin-left: 5px;
 }
