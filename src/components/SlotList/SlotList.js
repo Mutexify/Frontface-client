@@ -33,7 +33,9 @@ function SlotListElement({ slot }) {
 }
 
 function SlotListContainer({ slots }) {
-  const listItems = slots.map((slot) => <SlotListElement slot={slot} />);
+  const listItems = slots.map((slot) => (
+    <SlotListElement key={slot.id} slot={slot} />
+  ));
 
   return <div className="listContainer">{listItems}</div>;
 }
