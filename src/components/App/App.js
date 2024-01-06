@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import "../../constants";
 import "../SlotList/SlotList";
 import SlotList from "../SlotList/SlotList";
-import { BaseURL } from "./../../constants";
 import "./App.css";
+
+const BaseURL = process.env.REACT_APP_BASE_URL;
 
 function App() {
   const [slots, setSlots] = useState([]);

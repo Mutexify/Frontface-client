@@ -1,7 +1,7 @@
-import { BaseURL } from "../../constants";
 import "./SlotList.css";
 
 function SlotListElement({ slot }) {
+  const BaseURL = process.env.REACT_APP_BASE_URL;
   const handleClick = async () => {
     const response = await fetch(`${BaseURL}/api/slots/${slot.id}`, {
       method: "PATCH",
