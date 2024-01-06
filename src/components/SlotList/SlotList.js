@@ -1,32 +1,36 @@
 import "./SlotList.css";
 
-function SlotListElement({ slot }) {
+function LockButton({ slotData }) {
   const BaseURL = process.env.REACT_APP_BASE_URL;
+  const oppositeLockAction = !slotData.blocked;
+
   const handleClick = async () => {
-    const response = await fetch(`${BaseURL}/api/slots/${slot.id}`, {
+    const response = await fetch(`${BaseURL}/api/slots/${slotData.id}`, {
       method: "PATCH",
+      body: { id: slotData.id, blocked: oppositeLockAction },
     });
     const data = await response.json();
     console.log(data);
   };
+  return (
+    <button onClick={handleClick} className="listElementButton">
+      {oppositeLockAction ? "Lock" : "Unlock"}
+    </button>
+  );
+}
 
+function SlotListElement({ slotData }) {
   return (
     <div className="listElement">
-      {slot.id}
+      {slotData.id}
       <div
         style={{
           display: "flex",
           marginTop: "10px",
         }}
       >
-        <div>{`State: ${slot.blocked ? "blocked" : "not blocked"}`}</div>
-        <button
-          onClick={handleClick}
-          disabled={slot.blocked}
-          className="listElementButton"
-        >
-          Block
-        </button>
+        <div>{`State: ${slotData.blocked ? "blocked" : "not blocked"}`}</div>
+        <LockButton slotData={slotData} />
       </div>
     </div>
   );
@@ -34,7 +38,7 @@ function SlotListElement({ slot }) {
 
 function SlotListContainer({ slots }) {
   const listItems = slots.map((slot) => (
-    <SlotListElement key={slot.id} slot={slot} />
+    <SlotListElement key={slot.id} slotData={slot} />
   ));
 
   return <div className="listContainer">{listItems}</div>;
