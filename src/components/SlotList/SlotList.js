@@ -6,8 +6,11 @@ function LockButton({ slotData }) {
 
   const handleClick = async () => {
     const response = await fetch(`${BaseURL}/api/slots/${slotData.id}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "PATCH",
-      body: { id: slotData.id, blocked: oppositeLockAction },
+      body: JSON.stringify({ blocked: oppositeLockAction }),
     });
     const data = await response.json();
     console.log(data);
