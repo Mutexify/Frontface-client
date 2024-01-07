@@ -25,20 +25,21 @@ function App() {
     (e) => {
       console.log(`received event: ${e.data}`);
       const data = JSON.parse(e.data);
+      const slotData = data.slotData;
 
-      const index = slots.findIndex((slot) => slot.id === data.id);
+      const index = slots.findIndex((slot) => slot.id === slotData.id);
       if (index === -1) {
-        console.error(`Couldn't find slot with id ${data.id}`);
+        console.error(`Couldn't find slot with id ${slotData.id}`);
         console.log(slots);
         return;
       }
       const newSlots = slots.map((slot, i) => {
         if (i === index) {
-          slot.blocked = data.blocked;
+          slot.blocked = slotData.blocked;
         }
         return slot;
       });
-      console.log(`updating slot with id ${data.id}`);
+      console.log(`updating slot with id ${slotData.id}`);
       console.log(`slots after update:`, slots);
       setSlots(newSlots);
     },
