@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import "./SlotList.css";
 
+import { useSelector } from "react-redux";
+
 function LockButton({ slotData }) {
   const BaseURL = process.env.REACT_APP_BASE_URL;
   const oppositeLockAction = !slotData.blocked;
@@ -50,7 +52,9 @@ function SlotListContainer() {
 
   const fetchSlots = async () => {
     try {
-      const response = await fetch(`${BaseURL}/api/slots`);
+      const response = await fetch(`${BaseURL}/api/slots`, {
+        credentials: "include",
+      });
       const data = await response.json();
       setSlots(data);
     } catch (error) {
@@ -112,4 +116,9 @@ function SlotListContainer() {
   );
 }
 
-export default SlotListContainer;
+function SlotAuthContainer() {
+  const user = useSelector((state) => state.auth.user);
+  return user ? <SlotListContainer /> : <></>;
+}
+
+export default SlotAuthContainer;
