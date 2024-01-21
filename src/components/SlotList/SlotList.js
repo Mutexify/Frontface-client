@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react";
 import "./SlotList.css";
 
 function LockButton({ slotData }) {
@@ -10,6 +11,7 @@ function LockButton({ slotData }) {
         "Content-Type": "application/json",
       },
       method: "PATCH",
+      credentials: "include",
       body: JSON.stringify({ blocked: oppositeLockAction }),
     });
     const data = await response.json();
@@ -39,12 +41,75 @@ function SlotListElement({ slotData }) {
   );
 }
 
-function SlotListContainer({ slots }) {
-  const listItems = slots.map((slot) => (
-    <SlotListElement key={slot.id} slotData={slot} />
-  ));
+const BaseURL = process.env.REACT_APP_BASE_URL;
 
-  return <div className="listContainer">{listItems}</div>;
+function SlotListContainer() {
+  const [slots, setSlots] = useState([]);
+  const [loadingSlotsError, setLoadingSlotsError] = useState(false);
+  const [eventSource, setEventSource] = useState(null);
+
+  const fetchSlots = async () => {
+    try {
+      const response = await fetch(`${BaseURL}/api/slots`);
+      const data = await response.json();
+      setSlots(data);
+    } catch (error) {
+      console.log(error);
+      setLoadingSlotsError(true);
+    }
+  };
+
+  const updateSlotState = useCallback(
+    (e) => {
+      console.log(`received event: ${e.data}`);
+      const data = JSON.parse(e.data);
+      const slotData = data.slotData;
+
+      const index = slots.findIndex((slot) => slot.id === slotData.id);
+      if (index === -1) {
+        console.error(`Couldn't find slot with id ${slotData.id}`);
+        console.log(slots);
+        return;
+      }
+      const newSlots = slots.map((slot, i) => {
+        if (i === index) {
+          slot.blocked = slotData.blocked;
+        }
+        return slot;
+      });
+      console.log(`updating slot with id ${slotData.id}`);
+      console.log(`slots after update:`, slots);
+      setSlots(newSlots);
+    },
+    [slots]
+  );
+
+  useEffect(() => {
+    if (eventSource) return;
+    fetchSlots();
+    setEventSource(new EventSource(`${BaseURL}/api/sse/events`));
+    return () => {
+      eventSource?.close();
+    };
+  }, [eventSource]);
+
+  useEffect(() => {
+    if (!eventSource) return;
+    eventSource.onmessage = updateSlotState;
+    return () => {
+      eventSource.onmessage = null;
+    };
+  }, [eventSource, updateSlotState]);
+
+  return (
+    <div className="listContainer">
+      {loadingSlotsError ? (
+        <div>Couldn't load slots</div>
+      ) : (
+        slots.map((slot) => <SlotListElement key={slot.id} slotData={slot} />)
+      )}
+    </div>
+  );
 }
 
 export default SlotListContainer;
