@@ -1,12 +1,13 @@
 import { useEffect } from "react";
-import { getGoogleUrl } from "../getGoogleUrl";
 import { useCookies } from "react-cookie";
+import { getGoogleUrl } from "../getGoogleUrl";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../../redux/authSlice";
 
 function AuthBar() {
   const [cookies, setCookie] = useCookies(["token"]);
+  const backend_url = process.env.REACT_APP_BASE_URL;
 
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
@@ -14,22 +15,19 @@ function AuthBar() {
   useEffect(() => {
     const fetchUser = async () => {
       console.log("fetching user");
-      const response = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/api/users/me`,
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${backend_url}/api/users/me`, {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
         dispatch(login(data.data.user));
       } else {
-        setCookie("token", "");
+        setCookie("token", "", { domain: backend_url });
         dispatch(logout());
       }
     };
     fetchUser();
-  }, [cookies.token, setCookie, dispatch]);
+  }, [cookies.token, setCookie, dispatch, backend_url]);
 
   console.log(user);
 
@@ -39,7 +37,11 @@ function AuthBar() {
         <div>
           <div>Logged in</div>
           <div>email: {user.payload.email}</div>
-          <button onClick={() => setCookie("token", "")}>Logout</button>
+          <button
+            onClick={() => setCookie("token", "", { domain: backend_url })}
+          >
+            Logout
+          </button>
         </div>
       ) : (
         <a href={getGoogleUrl()}>Login</a>
