@@ -22,8 +22,7 @@ function AuthBar() {
         const data = await response.json();
         dispatch(login(data.data.user));
       } else {
-        setCookie("token", "", { domain: backend_url });
-        dispatch(logout());
+        await fetchLogout(backend_url, () => dispatch(logout()));
       }
     };
     fetchUser();
@@ -38,7 +37,9 @@ function AuthBar() {
           <div>Logged in</div>
           <div>email: {user.payload.email}</div>
           <button
-            onClick={() => setCookie("token", "", { domain: backend_url })}
+            onClick={async () => {
+              await fetchLogout(backend_url, () => dispatch(logout()));
+            }}
           >
             Logout
           </button>
@@ -48,6 +49,18 @@ function AuthBar() {
       )}
     </div>
   );
+}
+
+async function fetchLogout(backend_url, doLogout) {
+  const response = await fetch(`${backend_url}/api/auth/logout`, {
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    doLogout();
+  } else {
+    console.log("logout failed");
+  }
 }
 
 export default AuthBar;
