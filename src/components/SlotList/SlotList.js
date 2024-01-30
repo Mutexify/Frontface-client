@@ -34,9 +34,15 @@ function SlotListElement({ slotData }) {
         style={{
           display: "flex",
           marginTop: "10px",
+          flexDirection: "column",
         }}
       >
-        <div>{`State: ${slotData.blocked ? "blocked" : "not blocked"}`}</div>
+        <div style={{ display: "flex" }}>
+          <div>
+            {`State: ${slotData.blocked ? "blocked by " : "not blocked"}`}
+            {slotData.blocked ?? `${slotData.blocked}`}
+          </div>
+        </div>
         <LockButton slotData={slotData} />
       </div>
     </div>
